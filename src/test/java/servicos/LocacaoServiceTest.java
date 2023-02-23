@@ -3,6 +3,8 @@ package servicos;
 import entidades.Filme;
 import entidades.Locacao;
 import entidades.Usuario;
+import exceptions.FilmesSemEstoqueException;
+import exceptions.LocadoraException;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -42,7 +44,7 @@ public class LocacaoServiceTest {
     }
 
 
-    @Test(expected = Exception.class)
+    @Test(expected = FilmesSemEstoqueException.class)
     public void testLocacao_filmeSemEstoque() throws Exception {
         //cenario
         LocacaoService service = new LocacaoService();
@@ -82,6 +84,33 @@ public class LocacaoServiceTest {
         //acao
         service.alugarFilme(usuario, filme);
 
+
+    }
+
+    @Test
+    public void testeLocacao_usuarioVazio() throws FilmesSemEstoqueException {
+
+        LocacaoService service = new LocacaoService();
+        Filme filme = new Filme("Filme 1", 1, 5.0);
+
+        try {
+            service.alugarFilme(null, filme);
+        } catch (LocadoraException e) {
+            Assert.assertThat(e.getMessage(), is("Usuario Vazio"));
+        }
+
+    }
+
+    @Test
+    public void testeLocacao_filmeVazio() throws FilmesSemEstoqueException, LocadoraException {
+        LocacaoService service = new LocacaoService();
+        Usuario usuario = new Usuario("Usuario 1");
+
+
+        exception.expect(LocadoraException.class);
+        exception.expectMessage("Filme Vazio");
+
+        service.alugarFilme(usuario,null);
 
     }
 
