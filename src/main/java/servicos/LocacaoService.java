@@ -7,11 +7,12 @@ import exceptions.FilmesSemEstoqueException;
 import exceptions.LocadoraException;
 
 import java.util.Date;
+import java.util.List;
 
 
 public class LocacaoService {
 	
-	public Locacao alugarFilme(Usuario usuario, Filme filme) throws FilmesSemEstoqueException, LocadoraException {
+	public Locacao alugarFilme(Usuario usuario, List<Filme> filme) throws FilmesSemEstoqueException, LocadoraException {
 
 
 		if(usuario == null){
@@ -22,8 +23,10 @@ public class LocacaoService {
 			throw new LocadoraException("Filme vazio");
 		}
 
-		if(filme.getEstoque() == 0){
-			throw new FilmesSemEstoqueException("Filme sem estoque");
+		for(Filme filme1 : filme){
+			if(filme1.getEstoque()==0) {
+				throw new FilmesSemEstoqueException("Filme sem estoque");
+			}
 		}
 
 
@@ -31,8 +34,11 @@ public class LocacaoService {
 		locacao.setFilme(filme);
 		locacao.setUsuario(usuario);
 		locacao.setDataLocacao(new Date());
-		locacao.setValor(filme.getPrecoLocacao());
-
+		Double valorTotal = 0d;
+		for (Filme filme1 : filme){
+			valorTotal += filme1.getPrecoLocacao();
+		}
+		locacao.setValor(valorTotal);
 		//Entrega no dia seguinte
 		Date dataEntrega = new Date();
 //		dataEntrega = adicionarDias(dataEntrega, 1);
